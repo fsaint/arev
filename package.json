@@ -1,0 +1,26 @@
+{
+  "name": "arev",
+  "version": "0.1.0",
+  "description": "Asset review loop for AI agents: submit images, videos and PDFs for human review and get structured feedback back.",
+  "type": "module",
+  "bin": { "arev": "dist/cli.js" },
+  "files": ["dist", "web", "skills"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p . && chmod +x dist/cli.js",
+    "dev": "tsc -p . --watch",
+    "typecheck": "tsc -p . --noEmit",
+    "test": "npm run build && vitest run"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "commander": "^12.1.0",
+    "pdfjs-dist": "4.10.38"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

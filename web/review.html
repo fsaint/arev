@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>arev · Review</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%224%22 fill=%22%232f5bea%22/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/">← Inbox</a>
+    <h1 id="title"></h1>
+    <select id="version-select" title="Version"></select>
+    <span id="status-chip" class="chip"></span>
+    <span class="spacer"></span>
+    <label class="muted">Compare
+      <select id="compare-select"><option value="">off</option></select>
+    </label>
+    <select id="compare-mode" hidden>
+      <option value="side">side by side</option>
+      <option value="slider">slider</option>
+    </select>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <main class="layout">
+    <section class="viewer-col">
+      <div id="note" class="note"></div>
+      <div id="toolbar" class="toolbar"></div>
+      <div id="viewer" class="viewer"></div>
+    </section>
+    <aside class="side">
+      <div id="composer" class="composer" hidden>
+        <div><strong>New comment</strong> <span id="composer-anchor" class="muted"></span></div>
+        <textarea id="composer-text" placeholder="What should change here?"></textarea>
+        <div class="row" id="composer-extra"></div>
+        <div class="row">
+          <button class="primary" id="composer-save">Add comment <kbd>⌘↵</kbd></button>
+          <button id="composer-cancel">Cancel <kbd>Esc</kbd></button>
+        </div>
+      </div>
+      <h3>History</h3>
+      <ol id="version-history" class="history"></ol>
+      <h3>Comments on this version</h3>
+      <ol id="comments" class="comments"></ol>
+      <textarea id="general-text" placeholder="General comment on this version…"></textarea>
+      <div style="margin-top:6px"><button id="general-add">Add general comment</button></div>
+      <div id="prev-wrap" hidden>
+        <h3>From earlier versions</h3>
+        <ol id="prev-comments" class="comments"></ol>
+      </div>
+      <p class="muted" id="hint" style="margin-top:18px"></p>
+    </aside>
+  </main>
+  <footer class="decision-bar">
+    <textarea id="summary" placeholder="Decision summary — required for Request changes / Reject unless there are comments"></textarea>
+    <div class="buttons">
+      <button id="btn-approve">Approve</button>
+      <button id="btn-changes">Request changes</button>
+      <button id="btn-reject">Reject</button>
+    </div>
+    <div id="decision-info" class="decision-info"></div>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script type="module" src="/static/review.js"></script>
+</body>
+</html>
