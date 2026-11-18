@@ -380,9 +380,9 @@ export class Store {
     return { version: v.n, file: this.abs(v.path), mime: v.mime };
   }
 
-  versionById(id: number): { file: string; mime: string } | null {
+  versionById(id: number): { file: string; mime: string; sha256: string } | null {
     const v = this.db.prepare('SELECT * FROM versions WHERE id = ?').get(id) as VersionRow | undefined;
-    return v ? { file: this.abs(v.path), mime: v.mime } : null;
+    return v ? { file: this.abs(v.path), mime: v.mime, sha256: v.sha256 } : null;
   }
 
   snapshotById(id: number): string | null {

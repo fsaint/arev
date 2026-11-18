@@ -32,6 +32,35 @@ describe('review server', () => {
     expect((await fetch(url('/static/../../package.json'))).status).not.toBe(200);
   });
 
+  it('gives files hash-bearing URLs so a reused port never serves another store\'s cached file', async () => {
+    store.submit({ file: fakeFile(dir, 'a.png', 'first store'), name: 'hero' });
+    const a = (await (await fetch(url('/api/asset?name=hero'))).json()).versions[0].file_url as string;
+
+    // A second store on its own server: same version id (1), different bytes.
+    const dir2 = tempDir();
+    const store2 = Store.init(path.join(dir2, '.arev'));
+    const srv2 = await startServer(store2, { port: 0 });
+    try {
+      store2.submit({ file: fakeFile(dir2, 'b.png', 'second store'), name: 'end-card' });
+      const res = await fetch(`http://127.0.0.1:${srv2.port}/api/asset?name=end-card`);
+      const b = (await res.json()).versions[0].file_url as string;
+      expect(a).toMatch(/vid=1&h=[0-9a-f]{64}$/);
+      expect(b).toMatch(/vid=1&h=[0-9a-f]{64}$/);
+      expect(a).not.toBe(b); // same vid, different URL: a browser cache can't mix them up
+    } finally {
+      await srv2.close();
+      store2.close();
+    }
+
+    const cached = await fetch(url(a));
+    expect(cached.headers.get('cache-control')).toMatch(/immutable/);
+    expect(await cached.text()).toBe('first store');
+    const bare = await fetch(url('/api/file?vid=1'));
+    expect(bare.headers.get('cache-control')).toBe('no-cache');
+    await bare.arrayBuffer();
+    expect((await fetch(url(`/api/file?vid=1&h=${'0'.repeat(64)}`))).status).toBe(404);
+  });
+
   it('runs the review flow over the API', async () => {
     store.submit({ file: fakeFile(dir, 'a.png', '0123456789'), name: 'hero' });
     const asset = await (await fetch(url('/api/asset?name=hero'))).json();

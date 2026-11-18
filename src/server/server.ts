@@ -105,7 +105,7 @@ function withCommentUrls(c: CommentOut, store: Store): CommentOut & { snapshot_u
 }
 
 function versionPayload(v: VersionInfo, store: Store) {
-  return { ...v, file: undefined, file_url: `/api/file?vid=${v.id}`, comments: v.comments.map((c) => withCommentUrls(c, store)) };
+  return { ...v, file: undefined, file_url: `/api/file?vid=${v.id}&h=${v.sha256}`, comments: v.comments.map((c) => withCommentUrls(c, store)) };
 }
 
 export function startServer(store: Store, o: { port: number; host?: string }): Promise<RunningServer> {
@@ -156,7 +156,11 @@ export function startServer(store: Store, o: { port: number; host?: string }): P
         if (p === '/api/file') {
           const v = store.versionById(Number(url.searchParams.get('vid')));
           if (!v) return send(res, 404, { error: { code: 'E_NOT_FOUND', message: 'no such version' } });
-          return sendFile(req, res, v.file, v.mime, 'private, max-age=31536000, immutable');
+          // Version ids are only unique within one store, and ports get reused by other
+          // stores, so only a URL that carries the content hash may be cached forever.
+          const h = url.searchParams.get('h');
+          if (h !== null && h !== v.sha256) return send(res, 404, { error: { code: 'E_NOT_FOUND', message: 'no such file' } });
+          return sendFile(req, res, v.file, v.mime, h ? 'private, max-age=31536000, immutable' : 'no-cache');
         }
         if (p === '/api/snapshot') {
           const file = store.snapshotById(Number(url.searchParams.get('cid')));
