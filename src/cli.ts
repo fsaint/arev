@@ -9,6 +9,8 @@ import { startServer } from './server/server.js';
 import { STORE_DIR, resolveStorePath, globalStorePath } from './store/find-store.js';
 import { type Decision, type Feedback, Store } from './store/store.js';
 
+const VERSION: string = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
+
 interface GlobalOpts {
   json?: boolean;
   store?: string;
@@ -20,7 +22,7 @@ program
   .name('arev')
   .description('Asset review loop for AI agents: submit images, videos and PDFs, get structured human feedback back.')
   // -V only: `--version` is used by subcommands to pick an asset version.
-  .version('0.1.0', '-V')
+  .version(VERSION, '-V')
   .option('--json', 'machine-readable JSON output on stdout')
   .option('--store <dir>', 'path to a .arev store directory (or set AREV_STORE)')
   .option('--global', 'use the global store in ~/.arev');
@@ -383,7 +385,7 @@ program
   );
 
 if (process.argv.length === 3 && process.argv[2] === '--version') {
-  console.log('0.1.0');
+  console.log(VERSION);
 } else {
   program.parseAsync(process.argv);
 }

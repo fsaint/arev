@@ -25,7 +25,24 @@ See [SPEC.md](SPEC.md) for the full design.
 
 ## Install
 
-Requires Node 20+. `ffmpeg` is optional; it captures video frames for comments added from the CLI.
+### Homebrew (macOS, Linux)
+
+```bash
+brew install fsaint/tap/arev
+```
+
+This builds arev against Homebrew's `node`. To teach Claude Code the review loop, copy the skill
+it installs (the exact path is printed after install):
+
+```bash
+mkdir -p ~/.claude/skills && cp -r "$(brew --prefix arev)/share/arev/skills/arev" ~/.claude/skills/
+```
+
+Upgrade with `brew upgrade arev`.
+
+### From source
+
+Requires Node 22+. `ffmpeg` is optional; it captures video frames for comments added from the CLI.
 
 ```bash
 git clone https://github.com/fsaint/arev.git && cd arev
@@ -107,8 +124,8 @@ Settings live in `.arev/config.json`: `port`, `open_browser`, `notifications` (m
 
 [`skills/arev/SKILL.md`](skills/arev/SKILL.md) teaches Claude Code the loop: submit with
 `--wait`, branch on the exit code, read comments and snapshots, resubmit with `--resolves`, and
-never approve or reject on the human's behalf. Install it globally with a symlink so it stays in
-sync with the repo:
+never approve or reject on the human's behalf. Homebrew users: see [Install](#homebrew-macos-linux).
+From a source checkout, symlink it so it stays in sync with the repo:
 
 ```bash
 mkdir -p ~/.claude/skills && ln -s "$PWD/skills/arev" ~/.claude/skills/arev
